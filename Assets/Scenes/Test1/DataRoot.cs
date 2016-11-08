@@ -60,49 +60,16 @@ public class DataRootFormatter : ZeroFormatter.Formatters.Formatter<DataRoot>
 
     public override DataRoot Deserialize(ref byte[] bytes, int offset, DirtyTracker tracker, out int byteSize)
     {
-        int dataType = ZeroFormatter.Internal.BinaryUtil.ReadInt32(ref bytes, offset);
-        byteSize = 4;
-
         DataRoot dataRoot = new DataRoot();
-
-        dataRoot.DataType = (DataRoot.DataTypeVersion)dataType;
-
-        int length = ZeroFormatter.Internal.BinaryUtil.ReadInt32(ref bytes, offset);
-
-        if(length==-1)
-        {
-            byteSize += 4;
-            return dataRoot;
-        }
-        else
-        {
-            byteSize += length + 4;
-        }
-
-        byte[] data = new byte[length];
-        Buffer.BlockCopy(bytes, offset + 8, data, 0, length);
-        dataRoot.Data = data;
-
+        dataRoot.DataType = ZeroFormatter.Formatters.Formatter<DataRoot.DataTypeVersion>.Default.Deserialize(ref bytes, offset, tracker, out byteSize);
+        dataRoot.Data = ZeroFormatter.Formatters.Formatter<byte[]>.Default.Deserialize(ref bytes, offset, tracker, out byteSize);
         return dataRoot;
     }
 
     public override int Serialize(ref byte[] bytes, int offset, DataRoot value)
     {
-        int writeSize = ZeroFormatter.Internal.BinaryUtil.WriteInt32(ref bytes, offset, (Int32)value.DataType);
-
-        byte[] data = value.Data;
-
-        if(data==null)
-        {
-            ZeroFormatter.Internal.BinaryUtil.WriteInt32(ref bytes, offset, -1);
-            writeSize += 4;
-            return writeSize;
-        }
-
-        writeSize += data.Length;
-        ZeroFormatter.Internal.BinaryUtil.EnsureCapacity(ref bytes, offset, writeSize + 4);
-        ZeroFormatter.Internal.BinaryUtil.WriteInt32Unsafe(ref bytes, offset, data.Length);
-        Buffer.BlockCopy(data, 0, bytes, offset + 4, data.Length);
-        return writeSize + 4;
+        int writeSize = ZeroFormatter.Formatters.Formatter<DataRoot.DataTypeVersion>.Default.Serialize(ref bytes, offset, value.DataType);
+        writeSize += ZeroFormatter.Formatters.Formatter<byte[]>.Default.Serialize(ref bytes, offset, value.Data);
+        return writeSize;
     }
 }
