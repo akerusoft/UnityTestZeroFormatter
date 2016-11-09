@@ -68,8 +68,9 @@ public class DataRootFormatter : ZeroFormatter.Formatters.Formatter<DataRoot>
 
     public override int Serialize(ref byte[] bytes, int offset, DataRoot value)
     {
-        int writeSize = ZeroFormatter.Formatters.Formatter<DataRoot.DataTypeVersion>.Default.Serialize(ref bytes, offset, value.DataType);
-        writeSize += ZeroFormatter.Formatters.Formatter<byte[]>.Default.Serialize(ref bytes, offset, value.Data);
-        return writeSize;
+        int startOffset = offset;
+        offset += ZeroFormatter.Formatters.Formatter<DataRoot.DataTypeVersion>.Default.Serialize(ref bytes, offset, value.DataType);
+        offset += ZeroFormatter.Formatters.Formatter<byte[]>.Default.Serialize(ref bytes, offset, value.Data);
+        return offset - startOffset;
     }
 }

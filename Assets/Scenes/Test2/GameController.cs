@@ -157,15 +157,19 @@ namespace Test2
                     DataRoot dataRoot = ZeroFormatterSerializer.Deserialize<DataRoot>(File.ReadAllBytes(path));
                     MonsterDataBase dataBase = dataRoot.LoadMonsterData();
 
-                    if (dataBase is MonsterDataV1)
+                    switch(dataBase.DataType)
                     {
-                        MonsterDataV1 data = dataBase as MonsterDataV1;
-                        name = data.Name;
-                        hitPoint = data.HitPoint;
-                        hitRate = data.HitRate;
-                        speed = data.Speed;
-                        luck = data.Luck;
-                        //UnityEngine.Debug.Log("[ZeroFormatter] Data load. hitPoint:" + hitPoint);
+                        case DataRoot.DataTypeVersion.MonsterDataV1:
+                        {
+                            MonsterDataV1 data = dataBase as MonsterDataV1;
+                            name = data.Name;
+                            hitPoint = data.HitPoint;
+                            hitRate = data.HitRate;
+                            speed = data.Speed;
+                            luck = data.Luck;
+                            //UnityEngine.Debug.Log("[ZeroFormatter] Data load. hitPoint:" + hitPoint);
+                            break;
+                        }
                     }
                 }
 
