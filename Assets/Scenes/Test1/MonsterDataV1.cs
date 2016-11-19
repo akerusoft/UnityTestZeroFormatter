@@ -3,8 +3,9 @@
 [ZeroFormattable]
 public class MonsterDataV1 : MonsterDataBase
 {
-    public MonsterDataV1() : base(DataRoot.DataTypeVersion.MonsterDataV1)
+    public override DataRoot.DataTypeVersion DataType
     {
+        get { return DataRoot.DataTypeVersion.MonsterDataV1; }
     }
 
     [Index(0)]

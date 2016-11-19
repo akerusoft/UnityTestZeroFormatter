@@ -7,6 +7,8 @@ public class GameController : MonoBehaviour
 {
     void Start()
     {
+        Debug.Log("-----------------<1>-----------------");
+
         MonsterDataV1 dataV1 = new MonsterDataV1()
         {
             Name = "スライム",
@@ -27,7 +29,7 @@ public class GameController : MonoBehaviour
             Debug.Log("Luck:" + loadData.Luck);
         }
 
-        Debug.Log("------------------------------------");
+        Debug.Log("-----------------<2>-----------------");
 
         MonsterDataV2 dataV2 = new MonsterDataV2()
         {
@@ -51,63 +53,43 @@ public class GameController : MonoBehaviour
             Debug.Log("Defense:" + loadData.Defense);
         }
 
-        Debug.Log("------------------------------------");
+        Debug.Log("-----------------<3>-----------------");
 
+        PackAndUnpack(dataV1);
+
+        Debug.Log("-----------------<4>-----------------");
+
+        PackAndUnpack(dataV2);
+    }
+
+    void PackAndUnpack(MonsterDataBase data)
+    {
+        byte[] bytes = ZeroFormatterSerializer.Serialize(data);
+        MonsterDataBase loadData = ZeroFormatterSerializer.Deserialize<MonsterDataBase>(bytes);
+        OutputToLog(loadData);
+    }
+
+    void OutputToLog(MonsterDataBase data)
+    {
+        switch(data.DataType)
         {
-            DataRoot dataRoot = new DataRoot();
-
-            dataRoot.SetMonsterData(dataV1);
-
-            {
-                byte[] bytes = ZeroFormatterSerializer.Serialize(dataRoot);
-                DataRoot loadData = ZeroFormatterSerializer.Deserialize<DataRoot>(bytes);
-
-                MonsterDataBase dataBase = loadData.LoadMonsterData();
-
-                if (dataBase is MonsterDataV1)
-                {
-                    MonsterDataV1 data = dataBase as MonsterDataV1;
-                    Debug.Log("Name:" + data.Name);
-                    Debug.Log("HitPoint:" + data.HitPoint);
-                    Debug.Log("HitRate:" + data.HitRate);
-                    Debug.Log("Speed:" + data.Speed);
-                    Debug.Log("Luck:" + data.Luck);
-                }
-                else
-                {
-                    Debug.LogError("Failed load data version1.");
-                }
-            }
-        }
-
-        Debug.Log("------------------------------------");
-
-        {
-            DataRoot dataRoot = new DataRoot();
-
-            dataRoot.SetMonsterData(dataV2);
-
-            {
-                byte[] bytes = ZeroFormatterSerializer.Serialize(dataRoot);
-                DataRoot loadData = ZeroFormatterSerializer.Deserialize<DataRoot>(bytes);
-
-                MonsterDataBase dataBase = loadData.LoadMonsterData();
-
-                if (dataBase is MonsterDataV2)
-                {
-                    MonsterDataV2 data = dataBase as MonsterDataV2;
-                    Debug.Log("Name:" + data.Name);
-                    Debug.Log("HitPoint:" + data.HitPoint);
-                    Debug.Log("HitRate:" + data.HitRate);
-                    Debug.Log("Speed:" + data.Speed);
-                    Debug.Log("Luck:" + data.Luck);
-                    Debug.Log("Defense:" + data.Defense);
-                }
-                else
-                {
-                    Debug.LogError("Failed load data version2.");
-                }
-            }
+            case DataRoot.DataTypeVersion.MonsterDataV1:
+                MonsterDataV1 version1 = data as MonsterDataV1;
+                Debug.Log("Name:" + version1.Name);
+                Debug.Log("HitPoint:" + version1.HitPoint);
+                Debug.Log("HitRate:" + version1.HitRate);
+                Debug.Log("Speed:" + version1.Speed);
+                Debug.Log("Luck:" + version1.Luck);
+                break;
+            case DataRoot.DataTypeVersion.MonsterDataV2:
+                MonsterDataV2 version2 = data as MonsterDataV2;
+                Debug.Log("Name:" + version2.Name);
+                Debug.Log("HitPoint:" + version2.HitPoint);
+                Debug.Log("HitRate:" + version2.HitRate);
+                Debug.Log("Speed:" + version2.Speed);
+                Debug.Log("Luck:" + version2.Luck);
+                Debug.Log("Defense:" + version2.Defense);
+                break;
         }
     }
 }

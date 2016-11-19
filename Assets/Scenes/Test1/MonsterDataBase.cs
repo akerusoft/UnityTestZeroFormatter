@@ -1,14 +1,11 @@
-﻿public abstract class MonsterDataBase
+﻿using ZeroFormatter;
+
+[Union(typeof(MonsterDataV1), typeof(MonsterDataV2))]
+public abstract class MonsterDataBase
 {
-    DataRoot.DataTypeVersion _dataType;
-
-    protected MonsterDataBase(DataRoot.DataTypeVersion dataType)
+    [UnionKey]
+    public abstract DataRoot.DataTypeVersion DataType
     {
-        _dataType = dataType;
-    }
-
-    public DataRoot.DataTypeVersion DataType
-    {
-        get { return _dataType; }
+        get;
     }
 }
