@@ -198,6 +198,7 @@ namespace Test2
                         Luck = luck,
                     };
 
+                    UnityEngine.Debug.Log("[ZeroFormatter] data:" + data);
                     File.WriteAllBytes(path, ZeroFormatterSerializer.Serialize<MonsterDataBase>(data));
                 }
 

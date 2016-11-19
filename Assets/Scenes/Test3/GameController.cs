@@ -26,7 +26,7 @@ namespace Test3
 
         void Serialize(SettingData data)
         {
-            byte[] bytes = ZeroFormatter.ZeroFormatterSerializer.Serialize(data);
+            byte[] bytes = ZeroFormatter.ZeroFormatterSerializer.Serialize<SettingData>(data);
             SettingData loadData = ZeroFormatter.ZeroFormatterSerializer.Deserialize<SettingData>(bytes);
             OutputToLog(loadData);
         }

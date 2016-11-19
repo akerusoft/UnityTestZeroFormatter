@@ -64,7 +64,7 @@ public class GameController : MonoBehaviour
 
     void PackAndUnpack(MonsterDataBase data)
     {
-        byte[] bytes = ZeroFormatterSerializer.Serialize(data);
+        byte[] bytes = ZeroFormatterSerializer.Serialize<MonsterDataBase>(data);
         MonsterDataBase loadData = ZeroFormatterSerializer.Deserialize<MonsterDataBase>(bytes);
         OutputToLog(loadData);
     }

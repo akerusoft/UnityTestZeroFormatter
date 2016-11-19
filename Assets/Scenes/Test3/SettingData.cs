@@ -14,6 +14,7 @@ namespace Test3
         English,
     }
 
+    [Union(typeof(SettingDataVer1), typeof(SettingDataVer2))]
     public abstract class SettingData
     {
         [UnionKey]

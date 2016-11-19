@@ -18,9 +18,6 @@ namespace ZeroFormatter.Internal
         public static void Register()
         {
             // Enums
-            ZeroFormatter.Formatters.Formatter<global::DataRoot.DataTypeVersion>.Register(new ZeroFormatter.DynamicObjectSegments.DataTypeVersionFormatter());
-            ZeroFormatter.Formatters.Formatter<global::DataRoot.DataTypeVersion?>.Register(new ZeroFormatter.DynamicObjectSegments.NullableDataTypeVersionFormatter());
-            ZeroFormatter.Comparers.ZeroFormatterEqualityComparer<global::DataRoot.DataTypeVersion>.Register(new ZeroFormatter.DynamicObjectSegments.DataTypeVersionEqualityComparer());
             ZeroFormatter.Formatters.Formatter<global::MonsterDataBase.VersionType>.Register(new ZeroFormatter.DynamicObjectSegments.VersionTypeFormatter());
             ZeroFormatter.Formatters.Formatter<global::MonsterDataBase.VersionType?>.Register(new ZeroFormatter.DynamicObjectSegments.NullableVersionTypeFormatter());
             ZeroFormatter.Comparers.ZeroFormatterEqualityComparer<global::MonsterDataBase.VersionType>.Register(new ZeroFormatter.DynamicObjectSegments.VersionTypeEqualityComparer());
@@ -34,7 +31,6 @@ namespace ZeroFormatter.Internal
             ZeroFormatter.Formatters.Formatter<global::Test3.LanguageType?>.Register(new ZeroFormatter.DynamicObjectSegments.Test3.NullableLanguageTypeFormatter());
             ZeroFormatter.Comparers.ZeroFormatterEqualityComparer<global::Test3.LanguageType>.Register(new ZeroFormatter.DynamicObjectSegments.Test3.LanguageTypeEqualityComparer());
             // Objects
-            ZeroFormatter.Formatters.Formatter<global::DataRoot>.Register(new ZeroFormatter.DynamicObjectSegments.DataRootFormatter());
             ZeroFormatter.Formatters.Formatter<global::MonsterDataV1>.Register(new ZeroFormatter.DynamicObjectSegments.MonsterDataV1Formatter());
             ZeroFormatter.Formatters.Formatter<global::MonsterDataV2>.Register(new ZeroFormatter.DynamicObjectSegments.MonsterDataV2Formatter());
             ZeroFormatter.Formatters.Formatter<global::Test3.SettingDataVer1>.Register(new ZeroFormatter.DynamicObjectSegments.Test3.SettingDataVer1Formatter());
@@ -44,6 +40,10 @@ namespace ZeroFormatter.Internal
             {
                 var unionFormatter = new ZeroFormatter.DynamicObjectSegments.MonsterDataBaseFormatter();
                 ZeroFormatter.Formatters.Formatter<global::MonsterDataBase>.Register(unionFormatter);
+            }
+            {
+                var unionFormatter = new ZeroFormatter.DynamicObjectSegments.Test3.SettingDataFormatter();
+                ZeroFormatter.Formatters.Formatter<global::Test3.SettingData>.Register(unionFormatter);
             }
             // Generics
         }
@@ -63,129 +63,6 @@ namespace ZeroFormatter.DynamicObjectSegments
     using global::ZeroFormatter.Formatters;
     using global::ZeroFormatter.Internal;
     using global::ZeroFormatter.Segments;
-
-    public class DataRootFormatter : Formatter<global::DataRoot>
-    {
-        public override int? GetLength()
-        {
-            return null;
-        }
-
-        public override int Serialize(ref byte[] bytes, int offset, global::DataRoot value)
-        {
-            var segment = value as IZeroFormatterSegment;
-            if (segment != null)
-            {
-                return segment.Serialize(ref bytes, offset);
-            }
-            else if (value == null)
-            {
-                BinaryUtil.WriteInt32(ref bytes, offset, -1);
-                return 4;
-            }
-            else
-            {
-                var startOffset = offset;
-
-                offset += (8 + 4 * (1 + 1));
-                offset += ObjectSegmentHelper.SerializeFromFormatter<global::DataRoot.DataTypeVersion>(ref bytes, startOffset, offset, 0, value.DataType);
-                offset += ObjectSegmentHelper.SerializeFromFormatter<byte[]>(ref bytes, startOffset, offset, 1, value.Data);
-
-                return ObjectSegmentHelper.WriteSize(ref bytes, startOffset, offset, 1);
-            }
-        }
-
-        public override global::DataRoot Deserialize(ref byte[] bytes, int offset, DirtyTracker tracker, out int byteSize)
-        {
-            byteSize = BinaryUtil.ReadInt32(ref bytes, offset);
-            if (byteSize == -1)
-            {
-                byteSize = 4;
-                return null;
-            }
-            return new DataRootObjectSegment(tracker, new ArraySegment<byte>(bytes, offset, byteSize));
-        }
-    }
-
-    public class DataRootObjectSegment : global::DataRoot, IZeroFormatterSegment
-    {
-        static readonly int[] __elementSizes = new int[]{ 4, 0 };
-
-        readonly ArraySegment<byte> __originalBytes;
-        readonly DirtyTracker __tracker;
-        readonly int __binaryLastIndex;
-        readonly byte[] __extraFixedBytes;
-
-        readonly CacheSegment<byte[]> _Data;
-
-        // 0
-        public override global::DataRoot.DataTypeVersion DataType
-        {
-            get
-            {
-                return ObjectSegmentHelper.GetFixedProperty<global::DataRoot.DataTypeVersion>(__originalBytes, 0, __binaryLastIndex, __extraFixedBytes, __tracker);
-            }
-            set
-            {
-                ObjectSegmentHelper.SetFixedProperty<global::DataRoot.DataTypeVersion>(__originalBytes, 0, __binaryLastIndex, __extraFixedBytes, value, __tracker);
-            }
-        }
-
-        // 1
-        public override byte[] Data
-        {
-            get
-            {
-                return _Data.Value;
-            }
-            set
-            {
-                _Data.Value = value;
-            }
-        }
-
-
-        public DataRootObjectSegment(DirtyTracker dirtyTracker, ArraySegment<byte> originalBytes)
-        {
-            var __array = originalBytes.Array;
-
-            this.__originalBytes = originalBytes;
-            this.__tracker = dirtyTracker = dirtyTracker.CreateChild();
-            this.__binaryLastIndex = BinaryUtil.ReadInt32(ref __array, originalBytes.Offset + 4);
-
-            this.__extraFixedBytes = ObjectSegmentHelper.CreateExtraFixedBytes(this.__binaryLastIndex, 1, __elementSizes);
-
-            _Data = new CacheSegment<byte[]>(__tracker, ObjectSegmentHelper.GetSegment(originalBytes, 1, __binaryLastIndex, __tracker));
-        }
-
-        public bool CanDirectCopy()
-        {
-            return !__tracker.IsDirty;
-        }
-
-        public ArraySegment<byte> GetBufferReference()
-        {
-            return __originalBytes;
-        }
-
-        public int Serialize(ref byte[] targetBytes, int offset)
-        {
-            if (__extraFixedBytes != null || __tracker.IsDirty)
-            {
-                var startOffset = offset;
-                offset += (8 + 4 * (1 + 1));
-
-                offset += ObjectSegmentHelper.SerializeFixedLength<global::DataRoot.DataTypeVersion>(ref targetBytes, startOffset, offset, 0, __binaryLastIndex, __originalBytes, __extraFixedBytes, __tracker);
-                offset += ObjectSegmentHelper.SerializeCacheSegment<byte[]>(ref targetBytes, startOffset, offset, 1, _Data);
-
-                return ObjectSegmentHelper.WriteSize(ref targetBytes, startOffset, offset, 1);
-            }
-            else
-            {
-                return ObjectSegmentHelper.DirectCopyAll(__originalBytes, ref targetBytes, offset);
-            }
-        }
-    }
 
     public class MonsterDataV1Formatter : Formatter<global::MonsterDataV1>
     {
@@ -893,6 +770,105 @@ namespace ZeroFormatter.DynamicObjectSegments
 #pragma warning disable 612
 #pragma warning disable 414
 #pragma warning disable 168
+namespace ZeroFormatter.DynamicObjectSegments.Test3
+{
+    using global::System;
+    using global::ZeroFormatter.Formatters;
+    using global::ZeroFormatter.Internal;
+    using global::ZeroFormatter.Segments;
+
+    public class SettingDataFormatter : Formatter<global::Test3.SettingData>
+    {
+        readonly global::System.Collections.Generic.IEqualityComparer<global::Test3.FileVersion> comparer;
+        readonly global::Test3.FileVersion[] unionKeys;
+        
+        public SettingDataFormatter()
+        {
+            comparer = global::ZeroFormatter.Comparers.ZeroFormatterEqualityComparer<global::Test3.FileVersion>.Default;
+            unionKeys = new global::Test3.FileVersion[2];
+            unionKeys[0] = new global::Test3.SettingDataVer1().Version;
+            unionKeys[1] = new global::Test3.SettingDataVer2().Version;
+            
+        }
+
+        public override int? GetLength()
+        {
+            return null;
+        }
+
+        public override int Serialize(ref byte[] bytes, int offset, global::Test3.SettingData value)
+        {
+            if (value == null)
+            {
+                return BinaryUtil.WriteBoolean(ref bytes, offset, false);
+            }
+
+            var startOffset = offset;
+
+            offset += BinaryUtil.WriteBoolean(ref bytes, offset, true);
+            offset += Formatter<global::Test3.FileVersion>.Default.Serialize(ref bytes, offset, value.Version);
+
+            if (value is global::Test3.SettingDataVer1)
+            {
+                offset += Formatter<global::Test3.SettingDataVer1>.Default.Serialize(ref bytes, offset, (global::Test3.SettingDataVer1)value);
+            }
+            else if (value is global::Test3.SettingDataVer2)
+            {
+                offset += Formatter<global::Test3.SettingDataVer2>.Default.Serialize(ref bytes, offset, (global::Test3.SettingDataVer2)value);
+            }
+            
+            else
+            {
+                throw new Exception("Unknown subtype of Union:" + value.GetType().FullName);
+            }
+        
+            return offset - startOffset;
+        }
+
+        public override global::Test3.SettingData Deserialize(ref byte[] bytes, int offset, DirtyTracker tracker, out int byteSize)
+        {
+            byteSize = 1;
+            if (!BinaryUtil.ReadBoolean(ref bytes, offset))
+            {
+                return null;
+            }
+        
+            offset += 1;
+            int size;
+            var unionKey = Formatter<global::Test3.FileVersion>.Default.Deserialize(ref bytes, offset, tracker, out size);
+            byteSize += size;
+            offset += size;
+
+            global::Test3.SettingData result;
+            if (comparer.Equals(unionKey, unionKeys[0]))
+            {
+                result = Formatter<global::Test3.SettingDataVer1>.Default.Deserialize(ref bytes, offset, tracker, out size);
+            }
+            else if (comparer.Equals(unionKey, unionKeys[1]))
+            {
+                result = Formatter<global::Test3.SettingDataVer2>.Default.Deserialize(ref bytes, offset, tracker, out size);
+            }
+            else
+            {
+                throw new Exception("Unknown unionKey type of Union: " + unionKey.ToString());
+            }
+
+            byteSize += size;
+            return result;
+        }
+    }
+
+
+}
+
+#pragma warning restore 168
+#pragma warning restore 414
+#pragma warning restore 618
+#pragma warning restore 612
+#pragma warning disable 618
+#pragma warning disable 612
+#pragma warning disable 414
+#pragma warning disable 168
 namespace ZeroFormatter.DynamicObjectSegments
 {
     using global::System;
@@ -900,71 +876,6 @@ namespace ZeroFormatter.DynamicObjectSegments
     using global::ZeroFormatter.Formatters;
     using global::ZeroFormatter.Internal;
     using global::ZeroFormatter.Segments;
-
-
-    public class DataTypeVersionFormatter : Formatter<global::DataRoot.DataTypeVersion>
-    {
-        public override int? GetLength()
-        {
-            return 4;
-        }
-
-        public override int Serialize(ref byte[] bytes, int offset, global::DataRoot.DataTypeVersion value)
-        {
-            return BinaryUtil.WriteInt32(ref bytes, offset, (Int32)value);
-        }
-
-        public override global::DataRoot.DataTypeVersion Deserialize(ref byte[] bytes, int offset, DirtyTracker tracker, out int byteSize)
-        {
-            byteSize = 4;
-            return (global::DataRoot.DataTypeVersion)BinaryUtil.ReadInt32(ref bytes, offset);
-        }
-    }
-
-    public class NullableDataTypeVersionFormatter : Formatter<global::DataRoot.DataTypeVersion?>
-    {
-        public override int? GetLength()
-        {
-            return 5;
-        }
-
-        public override int Serialize(ref byte[] bytes, int offset, global::DataRoot.DataTypeVersion? value)
-        {
-            BinaryUtil.WriteBoolean(ref bytes, offset, value.HasValue);
-            if (value.HasValue)
-            {
-                BinaryUtil.WriteInt32(ref bytes, offset + 1, (Int32)value.Value);
-            }
-            else
-            {
-                BinaryUtil.EnsureCapacity(ref bytes, offset, offset + 5);
-            }
-
-            return 5;
-        }
-
-        public override global::DataRoot.DataTypeVersion? Deserialize(ref byte[] bytes, int offset, DirtyTracker tracker, out int byteSize)
-        {
-            byteSize = 5;
-            var hasValue = BinaryUtil.ReadBoolean(ref bytes, offset);
-            if (!hasValue) return null;
-
-            return (global::DataRoot.DataTypeVersion)BinaryUtil.ReadInt32(ref bytes, offset + 1);
-        }
-    }
-
-    public class DataTypeVersionEqualityComparer : IEqualityComparer<global::DataRoot.DataTypeVersion>
-    {
-        public bool Equals(global::DataRoot.DataTypeVersion x, global::DataRoot.DataTypeVersion y)
-        {
-            return (Int32)x == (Int32)y;
-        }
-
-        public int GetHashCode(global::DataRoot.DataTypeVersion x)
-        {
-            return (int)x;
-        }
-    }
 
 
     public class VersionTypeFormatter : Formatter<global::MonsterDataBase.VersionType>
