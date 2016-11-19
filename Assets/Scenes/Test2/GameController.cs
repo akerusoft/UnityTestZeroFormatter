@@ -28,6 +28,16 @@ namespace Test2
 
         IEnumerator Start()
         {
+            try
+            {
+                File.Delete(Path.Combine(Application.persistentDataPath, ZERO_FORMATTER_FILE_NAME));
+                File.Delete(Path.Combine(Application.persistentDataPath, FLAT_BUFFERS_FILE_NAME));
+            }
+            catch(System.Exception ex)
+            {
+                UnityEngine.Debug.LogException(ex);
+            }
+
             System.GC.Collect();
             Resources.UnloadUnusedAssets();
             yield return null;
@@ -154,12 +164,11 @@ namespace Test2
                 // 読み込み
                 if (File.Exists(path))
                 {
-                    DataRoot dataRoot = ZeroFormatterSerializer.Deserialize<DataRoot>(File.ReadAllBytes(path));
-                    MonsterDataBase dataBase = dataRoot.LoadMonsterData();
+                    MonsterDataBase dataBase = ZeroFormatterSerializer.Deserialize<MonsterDataBase>(File.ReadAllBytes(path));
 
-                    switch(dataBase.DataType)
+                    switch (dataBase.Version)
                     {
-                        case DataRoot.DataTypeVersion.MonsterDataV1:
+                        case MonsterDataBase.VersionType.MonsterDataV1:
                         {
                             MonsterDataV1 data = dataBase as MonsterDataV1;
                             name = data.Name;
@@ -189,10 +198,7 @@ namespace Test2
                         Luck = luck,
                     };
 
-                    DataRoot dataRoot = new DataRoot();
-                    dataRoot.SetMonsterData(data);
-
-                    File.WriteAllBytes(path, ZeroFormatterSerializer.Serialize(dataRoot));
+                    File.WriteAllBytes(path, ZeroFormatterSerializer.Serialize<MonsterDataBase>(data));
                 }
 
                 //UnityEngine.Debug.Log("[ZeroFormatter] hitPoint:" + hitPoint);

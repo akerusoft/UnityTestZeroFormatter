@@ -71,9 +71,9 @@ public class GameController : MonoBehaviour
 
     void OutputToLog(MonsterDataBase data)
     {
-        switch(data.DataType)
+        switch(data.Version)
         {
-            case DataRoot.DataTypeVersion.MonsterDataV1:
+            case MonsterDataBase.VersionType.MonsterDataV1:
                 MonsterDataV1 version1 = data as MonsterDataV1;
                 Debug.Log("Name:" + version1.Name);
                 Debug.Log("HitPoint:" + version1.HitPoint);
@@ -81,7 +81,7 @@ public class GameController : MonoBehaviour
                 Debug.Log("Speed:" + version1.Speed);
                 Debug.Log("Luck:" + version1.Luck);
                 break;
-            case DataRoot.DataTypeVersion.MonsterDataV2:
+            case MonsterDataBase.VersionType.MonsterDataV2:
                 MonsterDataV2 version2 = data as MonsterDataV2;
                 Debug.Log("Name:" + version2.Name);
                 Debug.Log("HitPoint:" + version2.HitPoint);

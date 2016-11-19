@@ -21,6 +21,9 @@ namespace ZeroFormatter.Internal
             ZeroFormatter.Formatters.Formatter<global::DataRoot.DataTypeVersion>.Register(new ZeroFormatter.DynamicObjectSegments.DataTypeVersionFormatter());
             ZeroFormatter.Formatters.Formatter<global::DataRoot.DataTypeVersion?>.Register(new ZeroFormatter.DynamicObjectSegments.NullableDataTypeVersionFormatter());
             ZeroFormatter.Comparers.ZeroFormatterEqualityComparer<global::DataRoot.DataTypeVersion>.Register(new ZeroFormatter.DynamicObjectSegments.DataTypeVersionEqualityComparer());
+            ZeroFormatter.Formatters.Formatter<global::MonsterDataBase.VersionType>.Register(new ZeroFormatter.DynamicObjectSegments.VersionTypeFormatter());
+            ZeroFormatter.Formatters.Formatter<global::MonsterDataBase.VersionType?>.Register(new ZeroFormatter.DynamicObjectSegments.NullableVersionTypeFormatter());
+            ZeroFormatter.Comparers.ZeroFormatterEqualityComparer<global::MonsterDataBase.VersionType>.Register(new ZeroFormatter.DynamicObjectSegments.VersionTypeEqualityComparer());
             ZeroFormatter.Formatters.Formatter<global::MyFlatBuffers.Data>.Register(new ZeroFormatter.DynamicObjectSegments.MyFlatBuffers.DataFormatter());
             ZeroFormatter.Formatters.Formatter<global::MyFlatBuffers.Data?>.Register(new ZeroFormatter.DynamicObjectSegments.MyFlatBuffers.NullableDataFormatter());
             ZeroFormatter.Comparers.ZeroFormatterEqualityComparer<global::MyFlatBuffers.Data>.Register(new ZeroFormatter.DynamicObjectSegments.MyFlatBuffers.DataEqualityComparer());
@@ -800,15 +803,15 @@ namespace ZeroFormatter.DynamicObjectSegments
 
     public class MonsterDataBaseFormatter : Formatter<global::MonsterDataBase>
     {
-        readonly global::System.Collections.Generic.IEqualityComparer<global::DataRoot.DataTypeVersion> comparer;
-        readonly global::DataRoot.DataTypeVersion[] unionKeys;
+        readonly global::System.Collections.Generic.IEqualityComparer<global::MonsterDataBase.VersionType> comparer;
+        readonly global::MonsterDataBase.VersionType[] unionKeys;
         
         public MonsterDataBaseFormatter()
         {
-            comparer = global::ZeroFormatter.Comparers.ZeroFormatterEqualityComparer<global::DataRoot.DataTypeVersion>.Default;
-            unionKeys = new global::DataRoot.DataTypeVersion[2];
-            unionKeys[0] = new global::MonsterDataV1().DataType;
-            unionKeys[1] = new global::MonsterDataV2().DataType;
+            comparer = global::ZeroFormatter.Comparers.ZeroFormatterEqualityComparer<global::MonsterDataBase.VersionType>.Default;
+            unionKeys = new global::MonsterDataBase.VersionType[2];
+            unionKeys[0] = new global::MonsterDataV1().Version;
+            unionKeys[1] = new global::MonsterDataV2().Version;
             
         }
 
@@ -827,7 +830,7 @@ namespace ZeroFormatter.DynamicObjectSegments
             var startOffset = offset;
 
             offset += BinaryUtil.WriteBoolean(ref bytes, offset, true);
-            offset += Formatter<global::DataRoot.DataTypeVersion>.Default.Serialize(ref bytes, offset, value.DataType);
+            offset += Formatter<global::MonsterDataBase.VersionType>.Default.Serialize(ref bytes, offset, value.Version);
 
             if (value is global::MonsterDataV1)
             {
@@ -856,7 +859,7 @@ namespace ZeroFormatter.DynamicObjectSegments
         
             offset += 1;
             int size;
-            var unionKey = Formatter<global::DataRoot.DataTypeVersion>.Default.Deserialize(ref bytes, offset, tracker, out size);
+            var unionKey = Formatter<global::MonsterDataBase.VersionType>.Default.Deserialize(ref bytes, offset, tracker, out size);
             byteSize += size;
             offset += size;
 
@@ -958,6 +961,71 @@ namespace ZeroFormatter.DynamicObjectSegments
         }
 
         public int GetHashCode(global::DataRoot.DataTypeVersion x)
+        {
+            return (int)x;
+        }
+    }
+
+
+    public class VersionTypeFormatter : Formatter<global::MonsterDataBase.VersionType>
+    {
+        public override int? GetLength()
+        {
+            return 4;
+        }
+
+        public override int Serialize(ref byte[] bytes, int offset, global::MonsterDataBase.VersionType value)
+        {
+            return BinaryUtil.WriteInt32(ref bytes, offset, (Int32)value);
+        }
+
+        public override global::MonsterDataBase.VersionType Deserialize(ref byte[] bytes, int offset, DirtyTracker tracker, out int byteSize)
+        {
+            byteSize = 4;
+            return (global::MonsterDataBase.VersionType)BinaryUtil.ReadInt32(ref bytes, offset);
+        }
+    }
+
+    public class NullableVersionTypeFormatter : Formatter<global::MonsterDataBase.VersionType?>
+    {
+        public override int? GetLength()
+        {
+            return 5;
+        }
+
+        public override int Serialize(ref byte[] bytes, int offset, global::MonsterDataBase.VersionType? value)
+        {
+            BinaryUtil.WriteBoolean(ref bytes, offset, value.HasValue);
+            if (value.HasValue)
+            {
+                BinaryUtil.WriteInt32(ref bytes, offset + 1, (Int32)value.Value);
+            }
+            else
+            {
+                BinaryUtil.EnsureCapacity(ref bytes, offset, offset + 5);
+            }
+
+            return 5;
+        }
+
+        public override global::MonsterDataBase.VersionType? Deserialize(ref byte[] bytes, int offset, DirtyTracker tracker, out int byteSize)
+        {
+            byteSize = 5;
+            var hasValue = BinaryUtil.ReadBoolean(ref bytes, offset);
+            if (!hasValue) return null;
+
+            return (global::MonsterDataBase.VersionType)BinaryUtil.ReadInt32(ref bytes, offset + 1);
+        }
+    }
+
+    public class VersionTypeEqualityComparer : IEqualityComparer<global::MonsterDataBase.VersionType>
+    {
+        public bool Equals(global::MonsterDataBase.VersionType x, global::MonsterDataBase.VersionType y)
+        {
+            return (Int32)x == (Int32)y;
+        }
+
+        public int GetHashCode(global::MonsterDataBase.VersionType x)
         {
             return (int)x;
         }
