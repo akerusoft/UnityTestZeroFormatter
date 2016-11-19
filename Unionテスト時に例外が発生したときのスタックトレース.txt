@@ -1,0 +1,7 @@
+﻿11-19 21:38:39.662: I/Unity(12240): NullReferenceException: Object reference not set to an instance of an object
+11-19 21:38:39.662: I/Unity(12240):   at ZeroFormatter.Internal.BinaryUtil.WriteSingle (System.Byte[]& bytes, Int32 offset, Single value) [0x00000] in <filename unknown>:0 
+11-19 21:38:39.662: I/Unity(12240):   at ZeroFormatter.Formatters.SingleFormatter.Serialize (System.Byte[]& bytes, Int32 offset, Single value) [0x00000] in <filename unknown>:0 
+11-19 21:38:39.662: I/Unity(12240):   at ZeroFormatter.Segments.ObjectSegmentHelper.SerializeFromFormatter[Single] (System.Byte[]& bytes, Int32 startOffset, Int32 offset, Int32 index, Single value) [0x00000] in <filename unknown>:0 
+11-19 21:38:39.662: I/Unity(12240):   at ZeroFormatter.DynamicObjectSegments.Test3.SettingDataVer1Formatter.Serialize (System.Byte[]& bytes, Int32 offset, Test3.SettingDataVer1 value) [0x00000] in <filename unknown>:0 
+11-19 21:38:39.662: I/Unity(12240):   at ZeroFormatter.DynamicObjectSegments.Test3.SettingDataFormatter.Serialize (System.Byte[]& bytes, Int32 offset, Test3.SettingData value) [0x00000] in <filename unknown>:0 
+11-19 21:38:39.662: I/Unity(12240):   at ZeroFormatter.ZeroFormatterSerializer.Serialize[SettingData] (System.Byte[]& buffer, Int32 offset, Test3.Se
